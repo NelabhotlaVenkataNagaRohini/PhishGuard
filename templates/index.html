@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PhishGuard - URL Security Scanner</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: #0f172a;
+
+            color: #e2e8f0;
+
+            min-height: 100vh;
+
+            padding: 40px 20px;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 850px;
+
+            margin: auto;
+
+        }
+
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .logo {
+
+            font-size: 48px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        h1 {
+
+            font-size: 36px;
+
+            color: #38bdf8;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .subtitle {
+
+            color: #94a3b8;
+
+            font-size: 16px;
+
+        }
+
+
+        .scanner {
+
+            background: #1e293b;
+
+            padding: 30px;
+
+            border-radius: 15px;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 10px;
+
+            font-weight: bold;
+
+        }
+
+
+        .input-area {
+
+            display: flex;
+
+            gap: 10px;
+
+        }
+
+
+        input[type="text"] {
+
+            flex: 1;
+
+            padding: 15px;
+
+            border: 1px solid #475569;
+
+            border-radius: 8px;
+
+            background: #0f172a;
+
+            color: white;
+
+            font-size: 16px;
+
+            outline: none;
+
+        }
+
+
+        input[type="text"]:focus {
+
+            border-color: #38bdf8;
+
+        }
+
+
+        button {
+
+            padding: 15px 25px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #0284c7;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        button:hover {
+
+            background: #0369a1;
+
+        }
+
+
+        .result {
+
+            margin-top: 30px;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            background: #0f172a;
+
+        }
+
+
+        .result h2 {
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .score {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .score-number {
+
+            color: #cbd5e1;
+
+            font-size: 18px;
+
+            margin-bottom: 25px;
+
+        }
+	
+	.risk-meter {
+    width: 100%;
+    height: 18px;
+    background: #334155;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.risk-fill {
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #22c55e,
+        #f59e0b,
+        #ef4444
+    );
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.risk-label {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+
+        .safe {
+
+            color: #22c55e;
+
+        }
+
+
+        .suspicious {
+
+            color: #f59e0b;
+
+        }
+
+
+        .danger {
+
+            color: #ef4444;
+
+        }
+
+
+        /* Feature analysis */
+
+        .analysis {
+
+            margin-top: 25px;
+
+        }
+
+
+        .analysis h3 {
+
+            margin-bottom: 15px;
+
+            color: #38bdf8;
+
+        }
+
+
+        .feature-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+
+        }
+
+
+        .feature {
+
+            background: #1e293b;
+
+            border: 1px solid #334155;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+        .feature-name {
+
+            color: #cbd5e1;
+
+        }
+
+
+        .feature-status {
+
+            font-weight: bold;
+
+        }
+
+
+        .detected {
+
+            color: #f59e0b;
+
+        }
+
+
+        .not-detected {
+
+            color: #22c55e;
+
+        }
+
+
+        /* Findings */
+
+        .reasons {
+
+            margin-top: 30px;
+
+        }
+
+
+        .reasons h3 {
+
+            margin-bottom: 12px;
+
+            color: #38bdf8;
+
+        }
+
+
+        .reasons ul {
+
+            padding-left: 20px;
+
+        }
+
+
+        .reasons li {
+
+            margin-bottom: 8px;
+
+            color: #cbd5e1;
+
+        }
+
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #64748b;
+
+            font-size: 13px;
+
+        }
+	
+	.history {
+    margin-top: 25px;
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.history h2 {
+    color: #38bdf8;
+    margin-bottom: 20px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    background: #0f172a;
+    border: 1px solid #334155;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.history-url {
+    color: #cbd5e1;
+    word-break: break-all;
+    margin-bottom: 10px;
+}
+
+.history-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-safe {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.history-suspicious {
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.history-danger {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.history-score {
+    color: #94a3b8;
+    font-weight: bold;
+}
+
+.dashboard {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.stat-card {
+
+    background: #1e293b;
+
+    border: 1px solid #334155;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+}
+
+
+.stat-number {
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+    color: #38bdf8;
+
+    margin-bottom: 5px;
+
+}
+
+
+.stat-label {
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+}
+
+
+.safe-card .stat-number {
+
+    color: #22c55e;
+
+}
+
+
+.suspicious-card .stat-number {
+
+    color: #f59e0b;
+
+}
+
+
+.danger-card .stat-number {
+
+    color: #ef4444;
+
+}
+
+
+@media (max-width: 700px) {
+
+    .dashboard {
+
+        grid-template-columns: repeat(2, 1fr);
+
+    }
+
+}
+
+        @media (max-width: 600px) {
+
+            .input-area {
+
+                flex-direction: column;
+
+            }
+
+
+            .feature-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="logo">🛡️</div>
+
+        <h1>PhishGuard</h1>
+
+        <p class="subtitle">
+
+            Rule-Based Phishing URL Risk Analyzer
+
+        </p>
+
+    </div>
+
+
+
+    <!-- SCANNER -->
+
+    <div class="dashboard">
+
+    <div class="stat-card">
+
+        <div class="stat-number">
+            {{ total_scans }}
+        </div>
+
+        <div class="stat-label">
+            Total Scans
+        </div>
+
+    </div>
+
+
+    <div class="stat-card safe-card">
+
+        <div class="stat-number">
+            {{ safe_scans }}
+        </div>
+
+        <div class="stat-label">
+            Likely Safe
+        </div>
+
+    </div>
+
+
+    <div class="stat-card suspicious-card">
+
+        <div class="stat-number">
+            {{ suspicious_scans }}
+        </div>
+
+        <div class="stat-label">
+            Suspicious
+        </div>
+
+    </div>
+
+
+    <div class="stat-card danger-card">
+
+        <div class="stat-number">
+            {{ high_risk_scans }}
+        </div>
+
+        <div class="stat-label">
+            High Risk
+        </div>
+
+    </div>
+
+</div>    
+
+    <div class="scanner">
+
+
+        <form method="POST">
+
+
+            <label for="url">
+
+                Enter a URL to analyze
+
+            </label>
+
+
+            <div class="input-area">
+
+
+                <input
+
+                    type="text"
+
+                    id="url"
+
+                    name="url"
+
+                    placeholder="https://example.com"
+
+                    required
+
+                >
+
+
+                <button type="submit">
+
+                    🔍 Analyze
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+
+        {% if result %}
+
+
+        <!-- RESULT -->
+
+        <div class="result">
+
+
+            <h2>Security Analysis</h2>
+
+
+            {% if result.result == "Likely Safe" %}
+
+                <div class="score safe">
+
+                    🟢 {{ result.result }}
+
+                </div>
+
+            {% elif result.result == "Suspicious" %}
+
+                <div class="score suspicious">
+
+                    🟠 {{ result.result }}
+
+                </div>
+
+            {% else %}
+
+                <div class="score danger">
+
+                    🔴 {{ result.result }}
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="score-number">
+
+    Risk Score:
+
+    <strong>{{ result.score }}/100</strong>
+
+</div>
+
+<div class="risk-meter">
+
+    <div
+        class="risk-fill"
+        style="width: {{ result.score }}%;"
+    ></div>
+
+</div>
+
+<div class="risk-label">
+
+    {% if result.score < 20 %}
+
+        🟢 Low Risk
+
+    {% elif result.score < 50 %}
+
+        🟠 Moderate Risk
+
+    {% else %}
+
+        🔴 High Risk
+
+    {% endif %}
+
+</div>
+
+
+
+            <!-- FEATURE ANALYSIS -->
+
+            <div class="analysis">
+
+                <h3>🔍 URL Analysis</h3>
+
+
+                <div class="feature-grid">
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            HTTPS
+
+                        </span>
+
+                        {% if result.features.https %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ Enabled
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Not Enabled
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            IP Address
+
+                        </span>
+
+                        {% if result.features.ip_address %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Detected
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ Not Detected
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            URL Length
+
+                        </span>
+
+                        {% if result.features.long_url %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Long
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ Normal
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            URL Shortener
+
+                        </span>
+
+                        {% if result.features.url_shortener %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Detected
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ Not Detected
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            Suspicious Keywords
+
+                        </span>
+
+                        {% if result.features.suspicious_keywords %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Detected
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ None
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            Multiple Subdomains
+
+                        </span>
+
+                        {% if result.features.multiple_subdomains %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Detected
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ Normal
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <div class="feature">
+
+                        <span class="feature-name">
+
+                            Punycode
+
+                        </span>
+
+                        {% if result.features.punycode %}
+
+                            <span class="feature-status detected">
+
+                                ⚠ Detected
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="feature-status not-detected">
+
+                                ✓ Not Detected
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SECURITY FINDINGS -->
+
+            <div class="reasons">
+
+                <h3>🛡️ Security Findings</h3>
+
+
+                {% if result.reasons %}
+
+                    <ul>
+
+                    {% for reason in result.reasons %}
+
+                        <li>{{ reason }}</li>
+
+                    {% endfor %}
+
+                    </ul>
+
+                {% else %}
+
+                    <p>
+
+                        ✓ No suspicious characteristics detected.
+
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    {% if history %}
+
+<div class="history">
+
+    <h2>📋 Scan History</h2>
+
+    <div class="history-list">
+
+        {% for scan in history %}
+
+        <div class="history-item">
+
+            <div class="history-url">
+
+                {{ scan.url }}
+
+            </div>
+
+            <div class="history-result">
+
+                {% if scan.result == "Likely Safe" %}
+
+                    <span class="history-safe">
+                        🟢 {{ scan.result }}
+                    </span>
+
+                {% elif scan.result == "Suspicious" %}
+
+                    <span class="history-suspicious">
+                        🟠 {{ scan.result }}
+                    </span>
+
+                {% else %}
+
+                    <span class="history-danger">
+                        🔴 {{ scan.result }}
+                    </span>
+
+                {% endif %}
+
+                <span class="history-score">
+                    {{ scan.score }}/100
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}    
+
+    <div class="footer">
+
+        PhishGuard — Educational Cybersecurity Project
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
